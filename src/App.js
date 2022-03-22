@@ -32,7 +32,10 @@ function App() {
       </Hidden>
       <Grid container={true} spacing={3}>
         <Grid
-          style={{ paddingTop: greaterThanSm ? 80 : 10 }}
+          style={{
+            paddingTop: greaterThanSm ? 80 : 10,
+            paddingBottom: greaterThanMd ? 0 : 212
+          }}
           item xs={12} md={7}>
           <AddSong />
           <SongList />
