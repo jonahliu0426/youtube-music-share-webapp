@@ -1,5 +1,5 @@
 import { Card, CardContent, CardMedia, IconButton, makeStyles, Slider, Typography } from "@material-ui/core";
-import { PlayArrow, SkipNext, SkipPrevious, Pause } from "@material-ui/icons";
+import { PlayArrow, SkipNext, SkipPrevious, Pause, VolumeDown, VolumeUp } from "@material-ui/icons";
 import React from "react";
 import { SongContext } from "../App";
 import QueuedSongList from "./QueuedSongList";
@@ -7,6 +7,7 @@ import QueuedSongList from "./QueuedSongList";
 import { useQuery } from "@apollo/client";
 import { GET_QUEUED_SONGS } from "../graphql/queries";
 import ReactPlayer from "react-player";
+import { Stack } from "@mui/material";
 
 
 const useStyles = makeStyles(theme => ({
@@ -46,6 +47,7 @@ function SongPlayer() {
     const [seeking, setSeeking] = React.useState(false);
     const [positionInQueue, setPositionInQueue] = React.useState(0);
     const reactPlayerRef = React.useRef();
+    const [volume, setVolume] = React.useState(0.5);
 
     React.useEffect(() => {
         const songIndex = data.queue.findIndex(song => song.id === state.song.id);
@@ -66,6 +68,10 @@ function SongPlayer() {
 
     function handleProgressChange(event, newValue) {
         setPlayed(newValue);
+    }
+
+    function handleVolumeChange(event, newValue) {
+        setVolume(newValue);
     }
 
     function handleSeekMouseDown() {
@@ -135,6 +141,16 @@ function SongPlayer() {
                         max={1}
                         step={0.01}
                     />
+                    <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+                        <VolumeDown />
+                        <Slider aria-label="Volume"
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={volume}
+                            onChange={handleVolumeChange} />
+                        <VolumeUp />
+                    </Stack>
                 </div>
                 <ReactPlayer
                     ref={reactPlayerRef}
@@ -146,7 +162,9 @@ function SongPlayer() {
                     }}
                     hidden
                     url={state.song.url}
-                    playing={state.isPlaying} />
+                    playing={state.isPlaying}
+                    volume={volume}
+                />
                 <CardMedia
                     className={classes.thumbnail}
                     image={state.song.thumbnail || data.queue && data.queue[0]?.thumbnail}
