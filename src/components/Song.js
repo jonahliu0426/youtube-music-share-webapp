@@ -8,10 +8,10 @@ import {
     makeStyles,
     Typography
 } from "@material-ui/core";
-import { Pause, PlayArrow, Save } from "@material-ui/icons";
+import { Delete, Pause, PlayArrow, Save } from "@material-ui/icons";
 import React from "react";
 import { SongContext } from "../App";
-import { ADD_OR_REMOVE_FROM_QUEUE } from "../graphql/mutation";
+import { ADD_OR_REMOVE_FROM_QUEUE, DELETE_SONG } from "../graphql/mutation";
 // import songReducer from "../reducer";
 
 const useStyles = makeStyles(theme => ({
@@ -46,6 +46,8 @@ export default function Song({ song }) {
         }
     })
 
+    const [deleteFromList] = useMutation(DELETE_SONG);
+
     React.useEffect(() => {
         console.log(id === state.song.id);
         const isSongPlaying = state.isPlaying && id === state.song.id;
@@ -62,6 +64,18 @@ export default function Song({ song }) {
         addOrRemoveFromQueue({
             variables: { input: { ...song, __typename: 'Song' } }
         });
+    }
+
+    async function handleAddOrRemoveFromList() {
+        try {
+            await deleteFromList({
+                variables: {
+                    id: song.id.length > 0 && song.id
+                }
+            })
+        } catch (error) {
+            console.error('Error deleting song from list', error);
+        }
     }
 
     return (
@@ -83,6 +97,9 @@ export default function Song({ song }) {
                         </IconButton>
                         <IconButton onClick={handleAddOrRemoveFromQueue} size="small" color="secondary">
                             <Save />
+                        </IconButton>
+                        <IconButton onClick={handleAddOrRemoveFromList} size="small" color="secondary">
+                            <Delete color="error" />
                         </IconButton>
                     </CardActions>
 

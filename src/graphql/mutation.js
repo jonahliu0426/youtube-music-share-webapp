@@ -13,3 +13,19 @@ mutation addSong($title: String!, $artist: String!, $thumbnail: String!, $url: S
   }
 }
 `;
+
+export const DELETE_SONG = gql`
+mutation deleteSong($id: uuid!) {
+  delete_songs(where: {id: {_eq: $id}}) {
+    returning {
+      artist
+      duration
+      id
+      thumbnail
+      title
+      url
+    }
+  }
+}
+
+`
